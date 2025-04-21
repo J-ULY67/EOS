@@ -16,13 +16,31 @@ function register() {
   const email = document.getElementById('regEmail').value;
   const password = document.getElementById('regPassword').value;
 
-  const newUser = { name, studentId, email, password };
+  if (!name || !studentId || !email || !password) {
+    alert("Please fill in all fields.");
+    return;
+  }
+
+  const exists = users.find(u => u.email === email);
+  if (exists) {
+    alert("User already exists with this email.");
+    return;
+  }
+
+  const newUser = { name, studentId, email, password, role: "student" };
   users.push(newUser);
   localStorage.setItem("users", JSON.stringify(users));
   localStorage.setItem("currentUser", JSON.stringify(newUser));
   alert("Registered successfully!");
-  window.location.href = "apply.html";
+  window.location.href = "dashboard.html";
 }
+
+
+function showRegister() {
+  document.querySelector('.form-container').style.display = 'none';
+  document.getElementById('register-form').classList.remove('hidden');
+}
+
 
 // Login
 function login() {
@@ -37,7 +55,7 @@ function login() {
       window.location.href = "admin-applications.html";
     } else {
       const hasApplied = applications.some(app => app.userEmail === user.email);
-      window.location.href = hasApplied ? "dashboard.html" : "apply.html";
+      window.location.href = hasApplied ? "dashboard.html" : "dashboard.html";
     }
   } else {
     alert("Invalid credentials.");
@@ -286,3 +304,11 @@ const user = JSON.parse(localStorage.getItem("currentUser"));
 if (userInfoSpan && user) {
   userInfoSpan.textContent = `Logged in as: ${user.email === "admin" ? "Admin" : user.email}`;
 }
+
+// Ensure correct form is shown on page load
+document.addEventListener("DOMContentLoaded", () => {
+  const regForm = document.getElementById('register-form');
+  if (regForm) {
+    regForm.classList.add('hidden'); // Hide register form by default
+  }
+});
